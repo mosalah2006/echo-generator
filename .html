@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Generator Pro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        }
+
+        .background-animation::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            left: -200px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .background-animation::after {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -300px;
+            right: -300px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-50px, 50px) scale(0.9); }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 4em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -2px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .equation-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .equation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
+            opacity: 0.3;
+        }
+
+        .equation-card .equation {
+            font-size: 2.5em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border-color: var(--primary);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+        }
+
+        .control-section {
+            margin-bottom: 30px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .control-value {
+            background: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 10px;
+            background: var(--bg-card-hover);
+            outline: none;
+            position: relative;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.7);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-card-hover);
+            margin-bottom: 20px;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .upload-zone.active {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.6;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .preset-btn {
+            padding: 15px;
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .preset-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .waveform-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .waveform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .waveform-header h3 {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .waveform-badge {
+            background: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        canvas {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+        }
+
+        .status-panel {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+
+        .status-panel.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-panel.success {
+            border-left-color: var(--success);
+        }
+
+        .status-panel.error {
+            border-left-color: var(--danger);
+        }
+
+        .status-panel.info {
+            border-left-color: var(--warning);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: var(--bg-card-hover);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .info-item-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .info-item-label {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .recording-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recording-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .visualizer {
+            position: relative;
+            height: 100px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .visualizer-bar {
+            position: absolute;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            transition: height 0.1s;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Echo Generator Pro</h1>
+            <p class="subtitle">Advanced Digital Signal Processing Suite</p>
+        </div>
+
+        <div class="equation-card">
+            <div class="equation">Y[n] = x[n] + α · Y[n-Nd]</div>
+        </div>
+
+        <div id="statusPanel" class="status-panel"></div>
+
+        <div class="main-grid">
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="icon">🎚️</div>
+                        <h2>Controls</h2>
+                    </div>
+
+                    <div class="control-section">
+                        <div class="control-label">
+                            <span>Echo Strength (α)</span>
+                            <span class="control-value" id="alphaValue">0.60</span>
+                        </div>
+                        <input type="range" id="alphaSlider" min="0.4" max="0.8" step="0.01" value="0.6">
+                        <div class="range-labels">
+                            <span>Weak (0.4)</span>
+                            <span>Strong (0.8)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <div class="control-label">
+                            <span>Echo Delay (Nd)</span>
+                            <span class="control-value" id="delayValue">0.50s</span>
+                        </div>
+                        <input type="range" id="delaySlider" min="0.05" max="2.0" step="0.01" value="0.5">
+                        <div class="range-labels">
+                            <span>50ms</span>
+                            <span>2.0s</span>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3 style="margin-bottom: 15px; font-size: 1.1em;">Presets</h3>
+                        <div class="presets-grid">
+                            <button class="preset-btn" onclick="setPreset(0.5, 0.1)">⚡ Quick Echo</button>
+                            <button class="preset-btn" onclick="setPreset(0.8, 0.3)">🏛️ Cathedral</button>
+                            <button class="preset-btn" onclick="setPreset(0.7, 1.0)">🌊 Long Delay</button>
+                            <button class="preset-btn" onclick="setPreset(0.6, 0.5)">⚖️ Balanced</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <div class="icon">📁</div>
+                        <h2>Input Source</h2>
+                    </div>
+
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="fileInput" accept="audio/*">
+                        <div class="upload-icon">📤</div>
+                        <h3>Drop audio file here</h3>
+                        <p style="color: var(--text-secondary); margin-top: 10px;">or click to browse</p>
+                        <p style="color: var(--text-secondary); font-size: 0.85em; margin-top: 5px;">Supports MP3, WAV, OGG</p>
+                    </div>
+
+                    <button class="btn btn-success" id="recordBtn">
+                        <span>🎤 Record Audio</span>
+                    </button>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <div class="icon">⚙️</div>
+                        <h2>Actions</h2>
+                    </div>
+
+                    <button class="btn btn-primary" id="generateBtn" disabled>
+                        <span>✨ Generate Echo</span>
+                    </button>
+                    <button class="btn btn-success" id="playInputBtn" disabled>
+                        <span>▶️ Play Input</span>
+                    </button>
+                    <button class="btn btn-success" id="playOutputBtn" disabled>
+                        <span>▶️ Play Output</span>
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn" disabled>
+                        <span>⏹️ Stop Playback</span>
+                    </button>
+                    <button class="btn btn-primary" id="downloadBtn" disabled>
+                        <span>💾 Download WAV</span>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <div class="waveform-container">
+                    <div class="waveform-header">
+                        <h3>Input Waveform</h3>
+                        <span class="waveform-badge" id="inputBadge">No Audio</span>
+                    </div>
+                    <canvas id="inputCanvas"></canvas>
+                    <div class="visualizer" id="inputVisualizer"></div>
+                </div>
+
+                <div class="waveform-container">
+                    <div class="waveform-header">
+                        <h3>Output Waveform (Echo Applied)</h3>
+                        <span class="waveform-badge" id="outputBadge">Not Generated</span>
+                    </div>
+                    <canvas id="outputCanvas"></canvas>
+                    <div class="visualizer" id="outputVisualizer"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="icon">📊</div>
+                        <h2>Analysis</h2>
+                    </div>
+                    <div class="info-grid" id="infoGrid">
+                        <div class="info-item">
+                            <div class="info-item-value">--</div>
+                            <div class="info-item-label">Sample Rate</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-value">--</div>
+                            <div class="info-item-label">Input Duration</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-value">--</div>
+                            <div class="info-item-label">Output Duration</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-value">--</div>
+                            <div class="info-item-label">Delay Samples</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-value">--</div>
+                            <div class="info-item-label">Echo Count</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-value">--</div>
+                            <div class="info-item-label">Normalization</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let audioContext;
+        let inputBuffer = null;
+        let outputBuffer = null;
+        let currentSource = null;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let analyser = null;
+        let animationId = null;
+
+        const fileInput = document.getElementById('fileInput');
+        const uploadZone = document.getElementById('uploadZone');
+        const alphaSlider = document.getElementById('alphaSlider');
+        const delaySlider = document.getElementById('delaySlider');
+        const alphaValue = document.getElementById('alphaValue');
+        const delayValue = document.getElementById('delayValue');
+        const generateBtn = document.getElementById('generateBtn');
+        const playInputBtn = document.getElementById('playInputBtn');
+        const playOutputBtn = document.getElementById('playOutputBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const statusPanel = document.getElementById('statusPanel');
+        const inputCanvas = document.getElementById('inputCanvas');
+        const outputCanvas = document.getElementById('outputCanvas');
+        const inputBadge = document.getElementById('inputBadge');
+        const outputBadge = document.getElementById('outputBadge');
+        const infoGrid = document.getElementById('infoGrid');
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        alphaSlider.addEventListener('input', (e) => {
+            alphaValue.textContent = parseFloat(e.target.value).toFixed(2);
+        });
+
+        delaySlider.addEventListener('input', (e) => {
+            delayValue.textContent = parseFloat(e.target.value).toFixed(2) + 's';
+        });
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('active');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('active');
+        });
+
+        uploadZone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('active');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('audio/')) {
+                await loadAudioFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                await loadAudioFile(file);
+            }
+        });
+
+        async function loadAudioFile(file) {
+            initAudioContext();
+            showStatus('Loading audio file...', 'info');
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                inputBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                generateBtn.disabled = false;
+                playInputBtn.disabled = false;
+                drawWaveform(inputBuffer, inputCanvas, '#6366f1');
+                inputBadge.textContent = 'Ready';
+                inputBadge.style.background = 'var(--success)';
+                updateAnalysis();
+                showStatus('Audio loaded successfully! Ready to generate echo.', 'success');
+            } catch (error) {
+                showStatus('Error loading audio file. Please try another file.', 'error');
+            }
+        }
+
+        recordBtn.addEventListener('click', async () => {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    recordedChunks = [];
+
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) recordedChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                        const arrayBuffer = await blob.arrayBuffer();
+                        initAudioContext();
+                        inputBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                        generateBtn.disabled = false;
+                        playInputBtn.disabled = false;
+                        drawWaveform(inputBuffer, inputCanvas, '#6366f1');
+                        inputBadge.textContent = 'Recorded';
+                        inputBadge.style.background = 'var(--success)';
+                        updateAnalysis();
+                        showStatus('Recording saved successfully!', 'success');
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordBtn.innerHTML = '<div class="recording-indicator"><div class="recording-dot"></div><span>Stop Recording</span></div>';
+                    recordBtn.style.background = 'var(--danger)';
+                    showStatus('Recording in progress... Click button again to stop.', 'info');
+                } catch (err) {
+                    showStatus('Microphone access denied. Please allow microphone access.', 'error');
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordBtn.innerHTML = '<span>🎤 Record Audio</span>';
+                recordBtn.style.background = '';
+            }
+        });
+
+        generateBtn.addEventListener('click', () => {
+            if (!inputBuffer) return;
+            
+            showStatus('Generating echo effect... Please wait.', 'info');
+            
+            setTimeout(() => {
+                const alpha = parseFloat(alphaSlider.value);
+                const delaySec = parseFloat(delaySlider.value);
+                const sampleRate = inputBuffer.sampleRate;
+                const Nd = Math.round(delaySec * sampleRate);
+                
+                const inputData = inputBuffer.getChannelData(0);
+                const inputLength = inputData.length;
+                const extraSamples = Math.round(3 * sampleRate);
+                const totalLength = inputLength + extraSamples;
+                const outputData = new Float32Array(totalLength);
+                
+                for (let n = 0; n < totalLength; n++) {
+                    const xn = n < inputLength ? inputData[n] : 0;
+                    if (n < Nd) {
+                        outputData[n] = xn;
+                    } else {
+                        outputData[n] = xn + alpha * outputData[n - Nd];
+                    }
+                }
+                
+                let maxVal = 0;
+                for (let i = 0; i < outputData.length; i++) {
+                    maxVal = Math.max(maxVal, Math.abs(outputData[i]));
+                }
+                
+                let normFactor = 1;
+                if (maxVal > 1) {
+                    normFactor = 0.95 / maxVal;
+                    for (let i = 0; i < outputData.length; i++) {
+                        outputData[i] *= normFactor;
+                    }
+                }
+                
+                outputBuffer = audioContext.createBuffer(1, totalLength, sampleRate);
+                outputBuffer.copyToChannel(outputData, 0);
+                
+                drawWaveform(outputBuffer, outputCanvas, '#8b5cf6');
+                playOutputBtn.disabled = false;
+                downloadBtn.disabled = false;
+                outputBadge.textContent = 'Generated';
+                outputBadge.style.background = 'var(--success)';
+                
+                updateAnalysis(Nd, alpha, normFactor);
+                showStatus(`Echo generated successfully! (α=${alpha.toFixed(2)}, delay=${delaySec.toFixed(2)}s)`, 'success');
+            }, 100);
+        });
+
+        playInputBtn.addEventListener('click', () => playAudio(inputBuffer, 'input'));
+        playOutputBtn.addEventListener('click', () => playAudio(outputBuffer, 'output'));
+        stopBtn.addEventListener('click', stopAudio);
+
+        function playAudio(buffer, type) {
+            stopAudio();
+            currentSource = audioContext.createBufferSource();
+            currentSource.buffer = buffer;
+            
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            currentSource.connect(analyser);
+            analyser.connect(audioContext.destination);
+            currentSource.start();
+            
+            stopBtn.disabled = false;
+            const visualizer = type === 'input' ? document.getElementById('inputVisualizer') : document.getElementById('outputVisualizer');
+            visualizeAudio(analyser, visualizer);
+            
+            showStatus(`Playing ${type} audio...`, 'info');
+            currentSource.onended = () => {
+                stopBtn.disabled = true;
+                cancelAnimationFrame(animationId);
+                showStatus('Playback finished', 'success');
+            };
+        }
+
+        function stopAudio() {
+            if (currentSource) {
+                currentSource.stop();
+                currentSource = null;
+            }
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            stopBtn.disabled = true;
+        }
+
+        function visualizeAudio(analyser, container) {
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            container.innerHTML = '';
+            const bars = [];
+            for (let i = 0; i < 50; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'visualizer-bar';
+                bar.style.left = `${i * 2}%`;
+                container.appendChild(bar);
+                bars.push(bar);
+            }
+            
+            function draw() {
+                analyser.getByteFrequencyData(dataArray);
+                
+                for (let i = 0; i < bars.length; i++) {
+                    const index = Math.floor(i * bufferLength / bars.length);
+                    const height = (dataArray[index] / 255) * 100;
+                    bars[i].style.height = height + '%';
+                }
+                
+                animationId = requestAnimationFrame(draw);
+            }
+            
+            draw();
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            const wav = audioBufferToWav(outputBuffer);
+            const blob = new Blob([wav], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `echo_output_${Date.now()}.wav`;
+            a.click();
+            showStatus('Output file downloaded successfully!', 'success');
+        });
+
+        function drawWaveform(buffer, canvas, color) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth * 2;
+            const height = canvas.height = canvas.offsetHeight * 2;
+            ctx.scale(2, 2);
+            
+            const displayWidth = width / 2;
+            const displayHeight = height / 2;
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, displayWidth, displayHeight);
+            
+            const data = buffer.getChannelData(0);
+            const step = Math.ceil(data.length / displayWidth);
+            const amp = displayHeight / 2;
+            
+            const gradient = ctx.createLinearGradient(0, 0, 0, displayHeight);
+            gradient.addColorStop(0, color);
+            gradient.addColorStop(1, color + '80');
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < displayWidth; i++) {
+                let min = 1.0;
+                let max = -1.0;
+                
+                for (let j = 0; j < step; j++) {
+                    const datum = data[i * step + j] || 0;
+                    if (datum < min) min = datum;
+                    if (datum > max) max = datum;
+                }
+                
+                ctx.moveTo(i, (1 + min) * amp);
+                ctx.lineTo(i, (1 + max) * amp);
+            }
+            
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, amp);
+            ctx.lineTo(displayWidth, amp);
+            ctx.stroke();
+        }
+
+        function updateAnalysis(Nd = null, alpha = null, normFactor = null) {
+            const items = infoGrid.children;
+            
+            if (inputBuffer) {
+                items[0].querySelector('.info-item-value').textContent = (inputBuffer.sampleRate / 1000).toFixed(1) + ' kHz';
+                items[1].querySelector('.info-item-value').textContent = (inputBuffer.length / inputBuffer.sampleRate).toFixed(2) + 's';
+            }
+            
+            if (outputBuffer) {
+                items[2].querySelector('.info-item-value').textContent = (outputBuffer.length / outputBuffer.sampleRate).toFixed(2) + 's';
+            }
+            
+            if (Nd !== null) {
+                items[3].querySelector('.info-item-value').textContent = Nd.toLocaleString();
+            }
+            
+            if (alpha !== null) {
+                const echoCount = Math.ceil(-3 / Math.log10(alpha));
+                items[4].querySelector('.info-item-value').textContent = '~' + echoCount;
+            }
+            
+            if (normFactor !== null) {
+                items[5].querySelector('.info-item-value').textContent = (normFactor * 100).toFixed(1) + '%';
+            }
+        }
+
+        function audioBufferToWav(buffer) {
+            const length = buffer.length * buffer.numberOfChannels * 2;
+            const arrayBuffer = new ArrayBuffer(44 + length);
+            const view = new DataView(arrayBuffer);
+            const channels = [buffer.getChannelData(0)];
+            let offset = 0;
+            
+            const writeString = (str) => {
+                for (let i = 0; i < str.length; i++) {
+                    view.setUint8(offset++, str.charCodeAt(i));
+                }
+            };
+            
+            writeString('RIFF');
+            view.setUint32(offset, 36 + length, true); offset += 4;
+            writeString('WAVE');
+            writeString('fmt ');
+            view.setUint32(offset, 16, true); offset += 4;
+            view.setUint16(offset, 1, true); offset += 2;
+            view.setUint16(offset, buffer.numberOfChannels, true); offset += 2;
+            view.setUint32(offset, buffer.sampleRate, true); offset += 4;
+            view.setUint32(offset, buffer.sampleRate * 2 * buffer.numberOfChannels, true); offset += 4;
+            view.setUint16(offset, buffer.numberOfChannels * 2, true); offset += 2;
+            view.setUint16(offset, 16, true); offset += 2;
+            writeString('data');
+            view.setUint32(offset, length, true); offset += 4;
+            
+            for (let i = 0; i < buffer.length; i++) {
+                for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+                    const sample = Math.max(-1, Math.min(1, channels[channel][i]));
+                    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                    offset += 2;
+                }
+            }
+            
+            return arrayBuffer;
+        }
+
+        function showStatus(message, type) {
+            statusPanel.textContent = message;
+            statusPanel.className = `status-panel show ${type}`;
+            setTimeout(() => {
+                statusPanel.classList.remove('show');
+            }, 5000);
+        }
+
+        function setPreset(alpha, delay) {
+            alphaSlider.value = alpha;
+            delaySlider.value = delay;
+            alphaValue.textContent = alpha.toFixed(2);
+            delayValue.textContent = delay.toFixed(2) + 's';
+        }
+    </script>
+</body>
+</html>
